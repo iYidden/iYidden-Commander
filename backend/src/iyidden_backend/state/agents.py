@@ -4,6 +4,7 @@ to address a specific agent when forwarding phone commands."""
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Any
 
@@ -12,7 +13,7 @@ from typing import Any
 class AgentConnection:
     agent_id: str
     hostname: str
-    send: callable  # type: ignore[valid-type]  # async (dict) -> None
+    send: Callable[[dict[str, Any]], Awaitable[None]]
 
 
 class AgentRegistry:

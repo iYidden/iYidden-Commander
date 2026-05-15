@@ -25,7 +25,7 @@ python -c "import secrets; print('AGENT_API_KEY=' + secrets.token_urlsafe(32))"
 # paste both into .env
 
 uv sync
-uv run uvicorn iyidden_backend.main:app --host 0.0.0.0 --port 8000 --reload
+uv run uvicorn iyidden_backend.main:app --host 0.0.0.0 --port 443 --reload
 ```
 
 ## Smoke test
@@ -34,19 +34,19 @@ In another shell — from `backend/`:
 
 ### 1. Health
 ```bash
-curl -s http://localhost:8000/health
+curl -s http://localhost:443/health
 # {"ok":true,"lanes":0,"agents":0,"subscribers":0}
 ```
 
 ### 2. Mashpia setup link
 ```bash
 uv run python scripts/make_mashpia_token.py
-# prints: http://localhost:8000/mashpia/setup/<long-token>
+# prints: http://localhost:443/mashpia/setup/<long-token>
 ```
 Open the URL in a browser → set PIN `123456`, backup password `correct horse battery staple`, max 10 minutes → submit. Re-opening the URL should now 404 (single-use).
 
 ```bash
-curl -s http://localhost:8000/mashpia/status
+curl -s http://localhost:443/mashpia/status
 # {"configured":true,"max_freeform_minutes":10}
 ```
 
@@ -54,13 +54,13 @@ curl -s http://localhost:8000/mashpia/status
 ```bash
 TOKEN=$(uv run python scripts/make_device_token.py "test phone" | tail -1)
 
-curl -s -X POST http://localhost:8000/auth/device/register \
+curl -s -X POST http://localhost:443/auth/device/register \
   -H 'content-type: application/json' \
   -d "{\"registration_token\":\"$TOKEN\",\"label\":\"test\"}"
 # {"access_token":"...","refresh_token":"...","device_id":"..."}
 
 ACCESS=...   # paste the access_token
-curl -s http://localhost:8000/lanes -H "Authorization: Bearer $ACCESS"
+curl -s http://localhost:443/lanes -H "Authorization: Bearer $ACCESS"
 # []
 ```
 
@@ -68,7 +68,7 @@ curl -s http://localhost:8000/lanes -H "Authorization: Bearer $ACCESS"
 
 Terminal A — fake agent:
 ```bash
-websocat -H 'Authorization: Bearer <AGENT_API_KEY from .env>' ws://localhost:8000/ws/agent
+websocat -H 'Authorization: Bearer <AGENT_API_KEY from .env>' ws://localhost:443/ws/agent
 # you should see: {"v":0,"type":"welcome",...}
 # now send a register, then a lane:
 {"v":0,"type":"register","agent_id":"agent-1","hostname":"laptop","lane_capacity":3,"agent_version":"0.1.0"}
@@ -77,7 +77,7 @@ websocat -H 'Authorization: Bearer <AGENT_API_KEY from .env>' ws://localhost:800
 
 Terminal B — phone:
 ```bash
-websocat "ws://localhost:8000/ws/phone?token=$ACCESS"
+websocat "ws://localhost:443/ws/phone?token=$ACCESS"
 {"v":0,"type":"subscribe"}
 # you'll see lane_snapshot containing lane-1, then live lane_update frames
 ```

@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import os
 import secrets
-from pathlib import Path
 
 import pytest
 import pytest_asyncio
@@ -18,10 +16,12 @@ def _env(monkeypatch, tmp_path):
     monkeypatch.setenv("LOG_LEVEL", "WARNING")
     # Bust the settings cache
     from iyidden_backend.config import get_settings
+
     get_settings.cache_clear()
     # And lane store / agent registry singletons
-    from iyidden_backend.state.lanes import reset_lane_store_for_tests
     from iyidden_backend.state.agents import reset_agent_registry_for_tests
+    from iyidden_backend.state.lanes import reset_lane_store_for_tests
+
     reset_lane_store_for_tests()
     reset_agent_registry_for_tests()
     yield
@@ -30,6 +30,7 @@ def _env(monkeypatch, tmp_path):
 @pytest_asyncio.fixture
 async def app():
     from iyidden_backend.main import app as _app
+
     async with _app.router.lifespan_context(_app):
         yield _app
 

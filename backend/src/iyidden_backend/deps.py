@@ -43,6 +43,7 @@ def require_agent_api_key(
     expected = get_settings().agent_api_key
     # Length-safe compare
     import hmac
+
     if not hmac.compare_digest(presented, expected):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "bad agent key")
 

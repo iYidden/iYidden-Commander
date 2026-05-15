@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
@@ -44,7 +44,7 @@ async def register_device(body: DeviceRegisterIn, db: DBDep) -> TokenPair:
             device_id,
             body.label or label_hint or "phone",
             sha256_hex(body.registration_token),
-            datetime.now(timezone.utc).isoformat(),
+            datetime.now(UTC).isoformat(),
         ),
     )
     await db.commit()

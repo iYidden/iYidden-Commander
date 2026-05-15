@@ -15,26 +15,31 @@ import json
 import os
 import sys
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import httpx
 import websockets
 
-BASE = os.environ.get("SMOKE_BASE", "http://127.0.0.1:8000")
+BASE = os.environ.get("SMOKE_BASE", "http://127.0.0.1:443")
 WS_BASE = BASE.replace("http://", "ws://").replace("https://", "wss://")
+
+
+def _load_env() -> dict[str, str]:
+    env: dict[str, str] = {}
+    with open(".env") as f:
+        for raw in f:
+            line = raw.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            env[k] = v
+    return env
 
 
 async def main() -> int:
     # Need an AGENT_API_KEY and a device registration token. Read .env directly
     # so this script is self-contained.
-    env = {}
-    with open(".env") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            k, v = line.split("=", 1)
-            env[k] = v
+    env = _load_env()
     agent_key = env["AGENT_API_KEY"]
 
     async with httpx.AsyncClient(base_url=BASE, timeout=5) as http:
@@ -98,7 +103,7 @@ async def main() -> int:
                         "tests": {"status": "green", "summary": "42 passed"},
                         "claude_activity": "smoke test running",
                         "health": "green",
-                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "updated_at": datetime.now(UTC).isoformat(),
                     },
                 }
             )
@@ -112,7 +117,7 @@ async def main() -> int:
             await phone_ws.send(json.dumps({"v": 0, "type": "subscribe", "id": "s1"}))
             snap = json.loads(await phone_ws.recv())
             assert snap["type"] == "lane_snapshot", snap
-            assert any(l["id"] == lane_id for l in snap["lanes"]), snap
+            assert any(lane["id"] == lane_id for lane in snap["lanes"]), snap
             print(f"[phone] got snapshot with {len(snap['lanes'])} lane(s)")
 
             # Now push an update and verify live fan-out
@@ -129,7 +134,7 @@ async def main() -> int:
                             "tests": {"status": "red", "summary": "1 failure"},
                             "claude_activity": "investigating failing test",
                             "health": "red",
-                            "updated_at": datetime.now(timezone.utc).isoformat(),
+                            "updated_at": datetime.now(UTC).isoformat(),
                         },
                     }
                 )

@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import secrets
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import aiosqlite
 
@@ -26,7 +26,7 @@ def sha256_hex(value: str) -> str:
 
 
 def _now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 # ---- Mashpia setup tokens -------------------------------------------------
@@ -86,9 +86,7 @@ async def create_device_registration_token(
     return token
 
 
-async def consume_device_registration_token(
-    db: aiosqlite.Connection, token: str
-) -> str | None:
+async def consume_device_registration_token(db: aiosqlite.Connection, token: str) -> str | None:
     """Returns label_hint if valid+unused+unexpired, else None. Marks used."""
     h = sha256_hex(token)
     now = _now()
@@ -115,9 +113,7 @@ async def consume_device_registration_token(
 # ---- Refresh tokens -------------------------------------------------------
 
 
-async def create_refresh_token(
-    db: aiosqlite.Connection, device_id: str
-) -> tuple[str, str]:
+async def create_refresh_token(db: aiosqlite.Connection, device_id: str) -> tuple[str, str]:
     """Returns (token_id, plaintext_token). Plaintext is returned only here."""
     settings = get_settings()
     token_id = str(uuid.uuid4())

@@ -3,20 +3,22 @@ mashpia-token single-use, device-token single-use."""
 
 from __future__ import annotations
 
+from datetime import UTC
+
 import pytest
 
 from iyidden_backend.auth import (
+    AuthError,
+    consume_device_registration_token,
+    consume_mashpia_setup_token,
     create_access_token,
+    create_device_registration_token,
+    create_mashpia_setup_token,
+    create_refresh_token,
     decode_access_token,
     hash_password,
-    verify_password,
-    create_mashpia_setup_token,
-    consume_mashpia_setup_token,
-    create_device_registration_token,
-    consume_device_registration_token,
-    create_refresh_token,
     rotate_refresh_token,
-    AuthError,
+    verify_password,
 )
 
 
@@ -77,12 +79,12 @@ async def test_refresh_rotation_invalidates_prior(app):
     db = app.state.db
     # Need an actual device row to satisfy the FK
     import uuid
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     device_id = str(uuid.uuid4())
     await db.execute(
         "INSERT INTO devices (id, label, registration_token_hash, created_at) VALUES (?, ?, ?, ?)",
-        (device_id, "test", "hash", datetime.now(timezone.utc).isoformat()),
+        (device_id, "test", "hash", datetime.now(UTC).isoformat()),
     )
     await db.commit()
 

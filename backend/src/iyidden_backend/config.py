@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     host: str = "0.0.0.0"
-    port: int = 8000
+    port: int = 443
 
     jwt_secret: str = Field(min_length=32)
     agent_api_key: str = Field(min_length=16)
@@ -18,7 +18,7 @@ class Settings(BaseSettings):
 
     db_path: str = "./iyidden.db"
     log_level: str = "INFO"
-    public_base_url: str = "http://localhost:8000"
+    public_base_url: str = "http://localhost:443"
 
     access_token_ttl_seconds: int = 15 * 60
     refresh_token_ttl_seconds: int = 30 * 24 * 60 * 60

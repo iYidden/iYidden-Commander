@@ -11,7 +11,7 @@ import asyncio
 import hmac
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Header, WebSocket, WebSocketDisconnect, status
 from pydantic import TypeAdapter, ValidationError
@@ -25,7 +25,7 @@ from ..state.lanes import get_lane_store
 
 log = get_logger(__name__)
 router = APIRouter()
-_AGENT_IN = TypeAdapter(AgentInbound)
+_AGENT_IN = TypeAdapter(AgentInbound)  # type: ignore[var-annotated]
 
 
 @router.websocket("/ws/agent")
@@ -85,7 +85,7 @@ async def agent_ws(ws: WebSocket, authorization: str | None = Header(default=Non
                     lane_id=msg.lane_id,
                     prompt=msg.prompt,
                     options=msg.options,
-                    created_at=datetime.now(timezone.utc),
+                    created_at=datetime.now(UTC),
                 )
                 await store.add_question(q)
 

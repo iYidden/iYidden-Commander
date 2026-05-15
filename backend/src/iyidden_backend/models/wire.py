@@ -7,7 +7,7 @@ unknown types fail at parse time, not deep in a handler.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Annotated, Literal, Union
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -140,15 +140,13 @@ class PhonePing(_Envelope):
 
 
 PhoneInbound = Annotated[
-    Union[
-        PhoneSubscribe,
-        PhoneAnswerQuestion,
-        PhoneGitOp,
-        PhoneRequestZalOverride,
-        PhoneEmergencyAction,
-        PhoneRequestFreeformUnlock,
-        PhonePing,
-    ],
+    PhoneSubscribe
+    | PhoneAnswerQuestion
+    | PhoneGitOp
+    | PhoneRequestZalOverride
+    | PhoneEmergencyAction
+    | PhoneRequestFreeformUnlock
+    | PhonePing,
     Field(discriminator="type"),
 ]
 
@@ -226,20 +224,18 @@ class SrvPong(_Envelope):
 
 
 PhoneOutbound = Annotated[
-    Union[
-        SrvLaneSnapshot,
-        SrvLaneUpdate,
-        SrvLaneRemoved,
-        SrvQuestion,
-        SrvQuestionResolved,
-        SrvEmergencySummary,
-        SrvZalOverrideResult,
-        SrvFreeformUnlockResult,
-        SrvNotification,
-        SrvAck,
-        SrvError,
-        SrvPong,
-    ],
+    SrvLaneSnapshot
+    | SrvLaneUpdate
+    | SrvLaneRemoved
+    | SrvQuestion
+    | SrvQuestionResolved
+    | SrvEmergencySummary
+    | SrvZalOverrideResult
+    | SrvFreeformUnlockResult
+    | SrvNotification
+    | SrvAck
+    | SrvError
+    | SrvPong,
     Field(discriminator="type"),
 ]
 
@@ -292,15 +288,13 @@ class AgentHeartbeat(_Envelope):
 
 
 AgentInbound = Annotated[
-    Union[
-        AgentRegister,
-        AgentLaneState,
-        AgentLaneRemoved,
-        AgentQuestionAsk,
-        AgentGitOpResult,
-        AgentFreeformSessionEvent,
-        AgentHeartbeat,
-    ],
+    AgentRegister
+    | AgentLaneState
+    | AgentLaneRemoved
+    | AgentQuestionAsk
+    | AgentGitOpResult
+    | AgentFreeformSessionEvent
+    | AgentHeartbeat,
     Field(discriminator="type"),
 ]
 
@@ -347,13 +341,11 @@ class SrvStopFreeform(_Envelope):
 
 
 AgentOutbound = Annotated[
-    Union[
-        SrvWelcome,
-        SrvQuestionAnswered,
-        SrvGitOpRequest,
-        SrvEmergencyCommand,
-        SrvStartFreeform,
-        SrvStopFreeform,
-    ],
+    SrvWelcome
+    | SrvQuestionAnswered
+    | SrvGitOpRequest
+    | SrvEmergencyCommand
+    | SrvStartFreeform
+    | SrvStopFreeform,
     Field(discriminator="type"),
 ]

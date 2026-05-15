@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from jose import JWTError, jwt
 
@@ -11,7 +11,7 @@ class AuthError(Exception):
 
 def create_access_token(device_id: str, extra: dict | None = None) -> str:
     settings = get_settings()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     payload: dict = {
         "sub": device_id,
         "iat": int(now.timestamp()),
