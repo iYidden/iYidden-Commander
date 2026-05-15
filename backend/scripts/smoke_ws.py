@@ -20,7 +20,7 @@ from datetime import UTC, datetime
 import httpx
 import websockets
 
-BASE = os.environ.get("SMOKE_BASE", "http://127.0.0.1:443")
+BASE = os.environ.get("SMOKE_BASE", "http://127.0.0.1:8000")
 WS_BASE = BASE.replace("http://", "ws://").replace("https://", "wss://")
 
 

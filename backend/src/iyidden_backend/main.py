@@ -1,6 +1,6 @@
 """FastAPI app entrypoint. Run with:
 
-uv run uvicorn iyidden_backend.main:app --host 0.0.0.0 --port 443 --reload
+uv run uvicorn iyidden_backend.main:app --host 0.0.0.0 --port 8000 --reload
 """
 
 from __future__ import annotations
