@@ -44,9 +44,13 @@ async def test_registration_token_cannot_be_reused(client, app):
     from iyidden_backend.auth import create_device_registration_token
 
     token = await create_device_registration_token(app.state.db)
-    r1 = await client.post("/auth/device/register", json={"registration_token": token, "label": "a"})
+    r1 = await client.post(
+        "/auth/device/register", json={"registration_token": token, "label": "a"}
+    )
     assert r1.status_code == 200
-    r2 = await client.post("/auth/device/register", json={"registration_token": token, "label": "b"})
+    r2 = await client.post(
+        "/auth/device/register", json={"registration_token": token, "label": "b"}
+    )
     assert r2.status_code == 401
 
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -17,7 +17,7 @@ def _make_lane(id_: str = "lane-1") -> Lane:
         agent_id="agent-1",
         branch="feat/x",
         worktree_path="/tmp/x",
-        updated_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(UTC),
     )
 
 
@@ -58,7 +58,7 @@ async def test_question_updates_lane_pending():
             lane_id="lane-1",
             prompt="Pick one",
             options=["a", "b"],
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         await store.add_question(q)
         m1 = await asyncio.wait_for(sub.queue.get(), timeout=1.0)

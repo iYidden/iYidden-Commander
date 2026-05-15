@@ -17,17 +17,15 @@ from collections import deque
 from dataclasses import dataclass, field
 from typing import Any
 
-from ..models import Lane, Question
 from ..logging_setup import get_logger
+from ..models import Lane, Question
 
 log = get_logger(__name__)
 
 
 @dataclass(eq=False)
 class _Subscriber:
-    queue: asyncio.Queue[dict[str, Any]] = field(
-        default_factory=lambda: asyncio.Queue(maxsize=64)
-    )
+    queue: asyncio.Queue[dict[str, Any]] = field(default_factory=lambda: asyncio.Queue(maxsize=64))
 
     async def push(self, msg: dict[str, Any]) -> None:
         try:
@@ -72,7 +70,9 @@ class LaneStore:
                 self._lanes[q.lane_id] = lane
         await self._broadcast({"type": "question", "question": q.model_dump(mode="json")})
 
-    async def resolve_question(self, question_id: str, choice_index: int | None = None) -> Question | None:
+    async def resolve_question(
+        self, question_id: str, choice_index: int | None = None
+    ) -> Question | None:
         async with self._lock:
             q = self._questions.get(question_id)
             if q is None:
@@ -90,7 +90,9 @@ class LaneStore:
         await self._broadcast({"type": "question_resolved", "question_id": question_id})
         return updated
 
-    async def notify(self, title: str, body: str, severity: str = "info", lane_id: str | None = None) -> None:
+    async def notify(
+        self, title: str, body: str, severity: str = "info", lane_id: str | None = None
+    ) -> None:
         await self._broadcast(
             {
                 "type": "notification",

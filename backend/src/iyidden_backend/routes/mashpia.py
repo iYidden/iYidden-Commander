@@ -11,7 +11,7 @@ send the mashpia link).
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Form, HTTPException, status
 from fastapi.responses import HTMLResponse
@@ -76,7 +76,7 @@ async def setup_get(token: str, db: DBDep) -> HTMLResponse:
         (sha256_hex(token),),
     )
     row = await cur.fetchone()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     if not row or row["used_at"] is not None or datetime.fromisoformat(row["expires_at"]) < now:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "setup link not valid or already used")
     return HTMLResponse(_render())
@@ -107,7 +107,7 @@ async def setup_post(
     if not ok:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "setup link not valid or already used")
 
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
     pin_hash = hash_password(pin)
     bpw_hash = hash_password(backup_pw)
 

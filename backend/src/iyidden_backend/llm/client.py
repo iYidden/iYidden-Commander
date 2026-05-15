@@ -30,12 +30,16 @@ class StubLLMClient:
     async def whats_new_digest(self, commits: list[dict], diff_text: str) -> str:
         if not commits:
             return "Nothing new since last check."
-        msgs = "\n".join(f"- {c.get('message','(no msg)')}" for c in commits[:5])
+        msgs = "\n".join(f"- {c.get('message', '(no msg)')}" for c in commits[:5])
         return f"Recent commits:\n{msgs}"
 
     async def lane_activity_oneliner(self, last_lines: str) -> str:
         first = last_lines.strip().splitlines()[:1]
-        return (first[0][:117] + "...") if first and len(first[0]) > 120 else (first[0] if first else "idle")
+        return (
+            (first[0][:117] + "...")
+            if first and len(first[0]) > 120
+            else (first[0] if first else "idle")
+        )
 
 
 _singleton: LLMClient | None = None

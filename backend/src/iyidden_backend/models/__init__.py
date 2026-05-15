@@ -1,16 +1,16 @@
 from .wire import (
-    Lane,
-    LaneTests,
-    LaneCommit,
-    Question,
+    AgentInbound,
+    AgentOutbound,
     EmergencyOption,
     EmergencySummary,
     GitOp,
     GitOpRequest,
+    Lane,
+    LaneCommit,
+    LaneTests,
     PhoneInbound,
     PhoneOutbound,
-    AgentInbound,
-    AgentOutbound,
+    Question,
 )
 
 __all__ = [

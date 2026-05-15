@@ -28,7 +28,7 @@ from ..state.lanes import get_lane_store
 
 log = get_logger(__name__)
 router = APIRouter()
-_PHONE_IN = TypeAdapter(PhoneInbound)
+_PHONE_IN = TypeAdapter(PhoneInbound)  # type: ignore[var-annotated]
 
 
 async def _send(ws: WebSocket, obj: dict) -> None:
@@ -69,7 +69,7 @@ async def phone_ws(ws: WebSocket, token: str = Query(...)) -> None:
                     {
                         "v": 0,
                         "type": "lane_snapshot",
-                        "lanes": [l.model_dump(mode="json") for l in lanes],
+                        "lanes": [lane.model_dump(mode="json") for lane in lanes],
                     },
                 )
                 if ref:
@@ -78,7 +78,16 @@ async def phone_ws(ws: WebSocket, token: str = Query(...)) -> None:
             elif t == "answer_question":
                 q = await store.resolve_question(msg.question_id, msg.choice_index)
                 if q is None:
-                    await _send(ws, {"v": 0, "type": "error", "code": 4040, "message": "no such question", "ref_id": ref})
+                    await _send(
+                        ws,
+                        {
+                            "v": 0,
+                            "type": "error",
+                            "code": 4040,
+                            "message": "no such question",
+                            "ref_id": ref,
+                        },
+                    )
                     continue
                 # Forward to any connected agent — in step 1 we broadcast.
                 await get_agent_registry().broadcast(
@@ -169,5 +178,3 @@ async def _pump_to_phone(ws: WebSocket, sub) -> None:
         return
     except Exception as e:
         get_logger(__name__).exception("phone_pump_error", error=str(e))
-
-
