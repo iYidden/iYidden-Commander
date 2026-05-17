@@ -47,9 +47,6 @@ async def connect_once(settings) -> None:
     """One connection attempt."""
     headers = {"Authorization": f"Bearer {settings.agent_api_key}"}
     log.info(
-        "auth_debug",
-        key_prefix=settings.agent_api_key[:6],
-        key_len=len(settings.agent_api_key),
     )
     log.info("connecting", url=settings.backend_url, agent=settings.agent_name)
 
