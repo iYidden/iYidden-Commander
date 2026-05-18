@@ -46,8 +46,6 @@ async def receive_loop(ws) -> None:
 async def connect_once(settings) -> None:
     """One connection attempt."""
     headers = {"Authorization": f"Bearer {settings.agent_api_key}"}
-    log.info(
-    )
     log.info("connecting", url=settings.backend_url, agent=settings.agent_name)
 
     async with websockets.connect(settings.backend_url, additional_headers=headers) as ws:
