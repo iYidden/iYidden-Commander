@@ -14,7 +14,6 @@ from websockets.exceptions import ConnectionClosed
 
 from agent.config import get_settings
 
-HEARTBEAT_INTERVAL_S = 18
 AGENT_VERSION = "0.1.0"
 LANE_CAPACITY = 4
 
@@ -47,10 +46,10 @@ async def receive_loop(ws) -> None:
             log.warning("non_json_received", raw=raw)
 
 
-async def heartbeat_loop(ws) -> None:
-    """Send a heartbeat every HEARTBEAT_INTERVAL_S seconds until the socket dies."""
+async def heartbeat_loop(ws, interval: int) -> None:
+    """Send a heartbeat every `interval` seconds until the socket dies."""
     while True:
-        await asyncio.sleep(HEARTBEAT_INTERVAL_S)
+        await asyncio.sleep(interval)
         await ws.send(json.dumps({"v": 0, "type": "heartbeat"}))
         log.debug("heartbeat_sent")
 
@@ -74,7 +73,7 @@ async def connect_once(settings, state: dict) -> None:
         log.info("registered", agent_id=settings.agent_name, hostname=register["hostname"])
         state["registered"] = True
 
-        await asyncio.gather(receive_loop(ws), heartbeat_loop(ws))
+        await asyncio.gather(receive_loop(ws), heartbeat_loop(ws, settings.heartbeat_interval))
 
 
 async def run() -> None:
